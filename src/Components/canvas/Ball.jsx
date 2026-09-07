@@ -9,6 +9,7 @@ import {
 } from "@react-three/drei";
 
 import Loader from "../Loader";
+import CanvasErrorBoundary from "./CanvasErrorBoundary";
 
 const Ball = (props) => {
   const [decal] = useTexture([props.imgUrl]);
@@ -39,18 +40,29 @@ const Ball = (props) => {
 
 const BallCanvas = ({ icon }) => {
   return (
-    <Canvas
-      frameloop="demand"
-      dpr={[1, 2]}
-      gl={{ preserveDrawingBuffer: true }}
+    <CanvasErrorBoundary
+      label="tech ball"
+      fallback={
+        // Degrade to the flat icon: the tech stack still reads correctly
+        // without WebGL.
+        <div className="w-full h-full flex justify-center items-center">
+          <img src={icon} alt="" className="w-16 h-16 object-contain" />
+        </div>
+      }
     >
-      <Suspense fallback={<Loader />}>
-        <OrbitControls enableZoom={false} />
-        <Ball imgUrl={icon} />
-      </Suspense>
+      <Canvas
+        frameloop="demand"
+        dpr={[1, 2]}
+        gl={{ preserveDrawingBuffer: true }}
+      >
+        <Suspense fallback={<Loader />}>
+          <OrbitControls enableZoom={false} />
+          <Ball imgUrl={icon} />
+        </Suspense>
 
-      <Preload all />
-    </Canvas>
+        <Preload all />
+      </Canvas>
+    </CanvasErrorBoundary>
   );
 };
 
