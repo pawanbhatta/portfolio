@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Lockfile: this project uses npm (package-lock.json). Keep yarn out.
+yarn.lock
+pnpm-lock.yaml
