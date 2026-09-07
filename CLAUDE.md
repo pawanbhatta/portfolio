@@ -10,7 +10,7 @@ Guidance for Claude Code working in this repository.
 
 `3d-portfolio` — Pawan Bhatta's personal portfolio, served at **https://pawanbhatta.com.np**.
 
-React 18 + Vite 4 + Tailwind 3 + three.js (`@react-three/fiber`, `@react-three/drei`) + framer-motion + `@emailjs/browser`. No TypeScript, no test suite, no linter config. Last upstream commit May 2023.
+React 18 + Vite 4 + Tailwind 3 + three.js (`@react-three/fiber`, `@react-three/drei`) + framer-motion + `@emailjs/browser`. No TypeScript, no test suite, no linter config.
 
 **The code is on branch `master`, not `main`.** `main` holds a single empty "Initial commit" with only `.gitignore` and `LICENSE`. Anything pointed at the default branch builds nothing — this has already caused confusion once.
 
@@ -44,11 +44,13 @@ public/
 
 Content edits almost always belong in `src/constants/index.js`, not in components.
 
-`src/Components/Contact.jsx` has EmailJS service and template IDs hardcoded. They are publishable-by-design keys, so this is not a leak, but there is no `.env` in this project and no `import.meta.env` usage anywhere.
+`src/Components/Contact.jsx` reads EmailJS credentials from `VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID` and `VITE_EMAILJS_PUBLIC_KEY` — see `.env.example`. These are publishable client-side keys, not secrets. **No EmailJS account is configured yet**, so the form deliberately tells visitors to email directly instead of silently failing. It previously posted to the tutorial author's service with `to_email: sujata@jsmastery.pro`, so enquiries never reached Pawan.
 
 ## Hosting
 
-**Cloudflare Pages**, project `pawanbhatta-portfolio`, production branch `master`, at `pawanbhatta-portfolio.pages.dev`. DNS is on Cloudflare.
+**Cloudflare Pages**, project `pawanbhatta-portfolio`, production branch `master`, at `pawanbhatta-portfolio.pages.dev`. DNS is on Cloudflare, entirely on the free tier.
+
+The apex and `www` are **live**: both are proxied CNAMEs to `pawanbhatta-portfolio.pages.dev` with real Cloudflare Universal SSL certs. The InfinityFree A records are gone from both. The 8 old project subdomains (`coronatracker`, `exercisetracker`, `myblog`, `newspeaker`, `policyforum`, `sms`, `todoapp`, `youtube`) still point at `185.27.134.151` and are all still broken — decide whether to delete those records.
 
 Deploys are currently **manual direct uploads** — the project is not yet connected to Git:
 
@@ -85,9 +87,17 @@ InfinityFree's origin returns **"Empty reply from server"** to `curl`'s default 
 - Animation variants come from `src/utils/motion.js` — reuse the factories rather than inlining variants.
 - Assets are imported via `src/assets/index.js`, not by raw path.
 
+## Content and assets
+
+- `public/pawan-bhatta-cv.pdf` is committed and linked from the Hero, so it is intentionally public. **It is the source of truth for the copy in `src/constants/index.js`** — update both together.
+- `src/constants/index.js` exports `profile`, `services`, `technologies`, `experiences`, `education`, `testimonials` and `projects`. `experiences` is ordered **oldest-first** because `VerticalTimeline` renders in array order.
+- `testimonials` is intentionally empty; `Feedbacks` returns `null` rather than rendering a bare section header. Populate the array to bring the section back.
+- Project cards fall back to a gradient initials tile when `image` is null and hide the repo button when `source_code_link` is empty — most of this work is client work with no public repo. Both paths still work normally once real values are supplied.
+- All four canvases are wrapped in `CanvasErrorBoundary`, which must stay **outside** `<Canvas>`: r3f forwards errors from its own reconciler to the enclosing React tree, and the fallback is DOM. This is what stops a repeat of fault 3 blanking the page.
+- `build.rollupOptions.output.manualChunks` splits three / r3f+drei / framer-motion / react out of page code, so a copy edit invalidates ~54 KB rather than the whole 1.17 MB bundle. Keep it when upgrading Vite.
+
 ## Known issues
 
-- **Asset weight** (pre-existing, unrelated to the outage): `tripguide.png` 3.4 MB, `herobg.png` 930 KB, `carrent.png` and `jobit.png` ~755 KB each; JS bundle 1.16 MB (343 KB gzip). Worth compressing and code-splitting.
-- No error boundary around the `Canvas` components — a model that fails to load takes down the whole page rather than degrading. That is what turned fault 3 above into a blank screen.
-- `react-scripts@5.0.1` sits in `dependencies` and is unused (this is a Vite app). Removing it drops a large dependency tree.
-- `public/pawan-bhatta-cv.pdf` is committed and linked from the Hero section, so it is intentionally public. It is the source of truth for the copy in `src/constants/index.js` — update both together.
+- The hero background is a 1920px JPEG at q85 (287 KB). Fine line art on dark banded badly at lower quality; do not push it much further without looking at the result.
+- No test suite, so the `CanvasErrorBoundary` runtime catch path is unverified — it compiles, but nothing exercises it.
+- The contact form has no working backend until an EmailJS service exists.
