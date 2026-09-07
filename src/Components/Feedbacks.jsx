@@ -42,6 +42,10 @@ const FeedbackCard = ({
 );
 
 const Feedbacks = () => {
+  // No published testimonials yet — render nothing rather than an empty
+  // section header. Populate `testimonials` in src/constants to bring it back.
+  if (!testimonials.length) return null;
+
   return (
     <div className="mt-12 bg-black-100 rounded-[20px]">
       <div

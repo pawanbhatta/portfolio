@@ -8,7 +8,7 @@ import { motion as Motion } from "framer-motion";
 import "react-vertical-timeline-component/style.min.css";
 
 import { styles } from "../styles";
-import { experiences } from "../constants";
+import { education, experiences } from "../constants";
 import { SectionWrapper } from "../hoc";
 import { textVariant } from "../utils/motion";
 
@@ -73,6 +73,25 @@ const Experience = () => {
             />
           ))}
         </VerticalTimeline>
+      </div>
+
+      <Motion.div variants={textVariant()}>
+        <h3 className="text-white font-bold text-[30px] mt-10">Education.</h3>
+      </Motion.div>
+
+      <div className="mt-8 flex flex-wrap gap-7">
+        {education.map((item) => (
+          <div
+            key={item.degree}
+            className="bg-tertiary p-6 rounded-2xl sm:w-[360px] w-full"
+          >
+            <h4 className="text-white font-bold text-[18px]">{item.degree}</h4>
+            <p className="mt-2 text-secondary text-[14px]">
+              {item.institution}
+            </p>
+            <p className="mt-1 text-secondary text-[14px]">{item.date}</p>
+          </div>
+        ))}
       </div>
     </>
   );

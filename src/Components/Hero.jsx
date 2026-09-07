@@ -1,6 +1,7 @@
 import { motion as Motion } from "framer-motion";
 
 import { styles } from "../styles";
+import { profile } from "../constants";
 import { ComputersCanvas } from "./canvas";
 
 const Hero = () => {
@@ -20,9 +21,27 @@ const Hero = () => {
           </h1>
           <p className={`${styles.heroSubText} mt-2 text-white-100`}>
             {" "}
-            I develop 3D visuals, user <br className="sm:block hidden" />{" "}
-            interfaces and web applications.
+            I build full-stack web and mobile{" "}
+            <br className="sm:block hidden" /> applications — frontend to API.
           </p>
+
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <a
+              href={profile.resume}
+              download
+              className="bg-tertiary py-3 px-6 rounded-xl text-white font-bold shadow-md shadow-primary outline-none hover:bg-[#232631] transition-colors"
+            >
+              Download CV
+            </a>
+            <a
+              href={profile.github}
+              target="_blank"
+              rel="noreferrer"
+              className="py-3 px-6 rounded-xl text-secondary font-bold border border-secondary hover:text-white hover:border-white transition-colors"
+            >
+              GitHub
+            </a>
+          </div>
         </div>
       </div>
 

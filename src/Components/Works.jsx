@@ -6,6 +6,17 @@ import { projects } from "../constants";
 import { Tilt } from "react-tilt";
 import { github } from "../assets";
 
+// Most of these projects are client work with no public repo and no
+// screenshot cleared for publication, so the card falls back to a gradient
+// tile carrying the project's initials.
+const initials = (name) =>
+  name
+    .split(/\s+/)
+    .filter((word) => /^[A-Za-z]/.test(word))
+    .slice(0, 3)
+    .map((word) => word[0].toUpperCase())
+    .join("");
+
 const ProjectCard = ({
   index,
   name,
@@ -20,26 +31,36 @@ const ProjectCard = ({
       className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full"
     >
       <div className="relative w-full h-[230px]">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover rounded-2xl"
-        />
-        <div
-          className="absolute inset-0 flex justify-end
-         m-3 card-img_hover"
-        >
-          <div
-            onClick={() => window.open(source_code_link, "_blank")}
-            className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
-          >
-            <img
-              src={github}
-              alt="github"
-              className="w-1/2 h-1/2 object-contain"
-            />
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover rounded-2xl"
+          />
+        ) : (
+          <div className="w-full h-full rounded-2xl green-pink-gradient flex justify-center items-center">
+            <span className="text-white font-black text-[56px] tracking-widest opacity-80">
+              {initials(name)}
+            </span>
           </div>
-        </div>
+        )}
+        {source_code_link && (
+          <div
+            className="absolute inset-0 flex justify-end
+         m-3 card-img_hover"
+          >
+            <div
+              onClick={() => window.open(source_code_link, "_blank")}
+              className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
+            >
+              <img
+                src={github}
+                alt="github"
+                className="w-1/2 h-1/2 object-contain"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mt-5">
@@ -71,11 +92,11 @@ const Works = () => {
           variants={fadeIn("", "", 0.1, 1)}
           className="mt-3 text-secondary max-w-3xl leading-[30px] text-[17px]"
         >
-          Following projects showcases my skills and experiences through
-          real-world examples of my work. Each project is briefly described with
-          links to code repositories and live demos in it. It reflects my
-          ability to solve complex problems, work with different technologies,
-          and manage projects effectively.
+          A selection of the systems I have shipped in production — learning
+          platforms, a multi-restaurant ordering system with its rider app, a
+          government tax portal and cross-chain blockchain tooling. Most are
+          client work under NDA, so where there is no public repository the card
+          links nowhere; the description says what I built and owned.
         </Motion.p>
       </div>
 
